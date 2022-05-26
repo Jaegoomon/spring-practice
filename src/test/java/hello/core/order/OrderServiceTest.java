@@ -1,19 +1,24 @@
 package hello.core.order;
 
-import hello.core.discount.DiscountPolicy;
-import hello.core.discount.FixDiscountPolicy;
+import hello.core.AppConfig;
 import hello.core.member.Grade;
 import hello.core.member.Member;
 import hello.core.member.MemberService;
-import hello.core.member.MemberServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class OrderServiceTest {
 
-    MemberService memberService = new MemberServiceImpl();
-    OrderService orderService = new OrderServiceImpl();
-    DiscountPolicy discountPolicy = new FixDiscountPolicy();
+    MemberService memberService;
+    OrderService orderService;
+
+    @BeforeEach
+    public void beforeEach() {
+        AppConfig appConfig = new AppConfig();
+        memberService = appConfig.memberService();
+        orderService = appConfig.orderService();
+    }
 
     @Test
     void createOrder() {
@@ -25,9 +30,8 @@ public class OrderServiceTest {
         // when
         int itemPrice = 49000;
         Order order = orderService.createOrder(memberId, "itemA", 49000);
-        int price = order.getItemPrice() - discountPolicy.discount(member, itemPrice);
 
         // then
-        Assertions.assertThat(order.calculatePrice()).isEqualTo(price);
+        Assertions.assertThat(order.calculatePrice()).isEqualTo(48000);
     }
 }
